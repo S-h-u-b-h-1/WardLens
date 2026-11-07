@@ -171,7 +171,7 @@ function renderReportInspector(report){const host=$('evidence-inspector');host.r
    if(originalVoiceAnswer&&input.value.trim()===originalVoiceAnswer.transcript)input.value='';
    originalVoiceAnswer=null;latestFollowupClip=null;retryAnswer.hidden=true;
    await recordFollowupAnswer({language:report.language,consent:consentBox,field:input,status:voiceStatus,start:speak,stop,
-    onCaptured:clip=>{latestFollowupClip=clip;},onFailure:e=>{retryAnswer.hidden=isVoiceQuotaError(e);},onSuccess:()=>{retryAnswer.hidden=true;}});
+    onCaptured:clip=>{latestFollowupClip=clip;},onFailure:e=>{retryAnswer.hidden=isVoiceQuotaError(e)||isUpstreamRateLimit(e);},onSuccess:()=>{retryAnswer.hidden=true;}});
   });
   const stop=action('Stop & transcribe answer',()=>{if(followupRecorder?.state==='recording')followupRecorder.stop();});stop.disabled=true;
   const retryAnswer=action('Retry answer transcription',async()=>{
@@ -183,7 +183,7 @@ function renderReportInspector(report){const host=$('evidence-inspector');host.r
     if(!input.isConnected)return;input.value=result.transcript;
     controls.dispatchEvent(new CustomEvent('wardlens:followup-transcribed',{detail:result}));
     retryAnswer.hidden=true;txt(voiceStatus,'Follow-up transcription received. Review it before saving.');
-   }catch(error){if(input.isConnected){if(isVoiceQuotaError(error)){showQuotaError(error);retryAnswer.hidden=true;txt(voiceStatus,explainQuota(error));}else txt(voiceStatus,(error.message||'Transcription failed.')+' You can retry again or type your answer.');}}
+   }catch(error){if(input.isConnected){if(isVoiceQuotaError(error)||isUpstreamRateLimit(error)){showQuotaError(error);retryAnswer.hidden=true;txt(voiceStatus,explainQuota(error));}else txt(voiceStatus,(error.message||'Transcription failed.')+' You can retry again or type your answer.');}}
    finally{retryAnswer.disabled=false;if(input.isConnected)speak.disabled=!voiceAvailable;}
   });retryAnswer.hidden=true;
   const voiceStatus=el('div','followup-voice-status',voiceAvailable?'Optional: answer by voice, then review the text.':'Voice unavailable. Type your answer instead.');voiceStatus.setAttribute('role','status');
@@ -269,11 +269,23 @@ function cancelFollowupRecording(){
 }
 // A usage limit differs from a retryable transcription failure.
 let voiceTrialBlocked=false;
-function isVoiceQuotaError(e){return [402,429].includes(Number(e?.httpStatus))||/voice trial limit reached|daily voice (?:trial |usage |)limit|voice quota (?:reached|exceeded)|insufficient (?:voice )?credits/i.test(String(e?.message||''));}
-function explainQuota(e){return /trial|daily/i.test(String(e?.message||''))?
- 'WardLens voice trial allowance reached for today. Retry cannot help until this allowance resets. Please type your report below or try voice later.':
- 'Voice requests are rate-limited. Retrying immediately cannot help. Please type your report below or try again later.';}
-function showQuotaError(e){voiceTrialBlocked=true;$('retry-voice').hidden=true;$('record-voice').disabled=true;txt($('voice-availability'),'● Voice limit reached');txt($('voice-status'),explainQuota(e));$('type-fallback').open=true;}
+function isVoiceQuotaError(e){return e?.apiCode==='WARDLENS_DAILY_LIMIT'||[402,429].includes(Number(e?.httpStatus))||/voice trial limit reached|daily voice (?:trial |usage |)limit|voice quota (?:reached|exceeded)|insufficient (?:voice )?credits/i.test(String(e?.message||''));}
+function isUpstreamRateLimit(e){return e?.apiCode==='GNANI_RATE_LIMIT'||/Gnani rate-limited/i.test(String(e?.message||''));}
+function voiceResetLabel(resetAt){
+ const d=new Date(resetAt||'');
+ return Number.isFinite(d.getTime())?d.toLocaleString(undefined,{hour:'numeric',minute:'2-digit',timeZoneName:'short'}):'the next daily reset';
+}
+function explainQuota(e){
+ if(isUpstreamRateLimit(e))return 'Gnani is temporarily rate-limiting transcription. Retrying immediately will not help. Type your report or check voice availability later.';
+ const reset=e?.resetAt||e?.quota?.resetAt;
+ return 'WardLens voice attempts are exhausted for this UTC day. Retry will not help. Voice allowance resets at '+voiceResetLabel(reset)+'. Type your report below until then.';
+}
+function showQuotaError(e){
+ voiceTrialBlocked=true;$('retry-voice').hidden=true;$('record-voice').disabled=true;
+ txt($('voice-availability'),isUpstreamRateLimit(e)?'● Gnani busy':'● Daily voice limit');
+ txt($('voice-status'),explainQuota(e));$('type-fallback').open=true;
+ txt($('voice-usage'),isUpstreamRateLimit(e)?'Upstream rate-limit; use typed reporting or check again later.':'Daily voice allowance exhausted. Use typed reporting until reset.');
+}
 async function requestGnaniTranscription(blob,language,onStatus,externalSignal=null){
  onStatus('Preparing your short audio clip…');
  const wav=await recordingToWav(blob),audio=await wavToBase64(wav);
@@ -286,7 +298,7 @@ async function requestGnaniTranscription(blob,language,onStatus,externalSignal=n
  try{
   const response=await fetch('/api/voice/transcribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({audio,language,consent:true}),signal:controller.signal});
   const data=await response.json();
-  if(!response.ok){const failure=new Error(data.error||('Voice service error '+response.status));failure.httpStatus=response.status;throw failure;}
+  if(!response.ok){const failure=new Error(data.error||('Voice service error '+response.status));failure.httpStatus=response.status;failure.apiCode=data.code;failure.resetAt=data.resetAt;failure.quota=data.quota;throw failure;}
   if(data.provider!=='gnani'||typeof data.transcript!=='string'||!data.transcript.trim())throw Error('Unexpected transcription response; no text accepted.');
   return {transcript:data.transcript.trim(),model:data.model||null,language:data.language||language};
  }finally{clearTimeout(deadline);externalSignal?.removeEventListener('abort',forwardAbort);}
@@ -320,7 +332,7 @@ async function recordFollowupAnswer({language,consent,field,status,start,stop,on
     const controls=status.parentElement;
     controls?.dispatchEvent(new CustomEvent('wardlens:followup-transcribed',{detail:transcript}));
     onSuccess();txt(status,'Gnani answer received. Read and correct it before saving.');field.focus({preventScroll:true});
-   }catch(error){if(field.isConnected){onFailure(error);if(isVoiceQuotaError(error)){showQuotaError(error);txt(status,explainQuota(error));}else txt(status,(error.message||'Transcription failed.')+' Retry this recorded answer or type.');}}
+   }catch(error){if(field.isConnected){onFailure(error);if(isVoiceQuotaError(error)||isUpstreamRateLimit(error)){showQuotaError(error);txt(status,explainQuota(error));}else txt(status,(error.message||'Transcription failed.')+' Retry this recorded answer or type.');}}
    finally{if(field.isConnected)start.disabled=!voiceAvailable;}
   },{once:true});
   recorder.start();stop.disabled=false;txt(status,'Recording your answer… 18 seconds maximum. Stop when ready.');
@@ -603,15 +615,38 @@ $('export-data').addEventListener('click',()=>{
  if(!window.confirm('This PRIVATE backup includes original statements, precise coordinates, and review decisions. Only share it with someone you trust. Continue?'))return;
  downloadText('wardlens-private-evidence.json',JSON.stringify(createPrivateBackup(reports,reviews),null,2),'application/json');
 });
-async function refreshVoiceAvailability(){
-  try{const response=await fetch('/api/voice/transcribe',{cache:'no-store'});
-   if(!response.ok)throw Error('Unavailable');const data=await response.json();voiceAvailable=data.available===true;
-   txt($('voice-availability'),voiceAvailable?'● Gnani live':'● Voice not configured');
-   txt($('voice-status'),voiceAvailable?'Ready to record. Select consent first; stop to transcribe.':'Live Gnani transcription is not yet configured on this deployment. Typing works.');
-   $('record-voice').disabled=!voiceAvailable||voiceTrialBlocked;
-   if(!voiceAvailable)$('type-fallback').open=true;
-  }catch{voiceAvailable=false;$('record-voice').disabled=true;txt($('voice-availability'),'● Voice unavailable');$('type-fallback').open=true;txt($('voice-status'),'Transcription service is unavailable; please type.');}
+async function refreshVoiceAvailability({preserveMessage=false}={}){
+ const button=$('check-voice');if(button)button.disabled=true;
+ try{
+  const response=await fetch('/api/voice/transcribe',{cache:'no-store'});
+  if(!response.ok)throw Error('Quota status unavailable');
+  const data=await response.json();
+  const quota=data.quota,reason=data.reason||'';
+  voiceAvailable=data.available===true;
+  voiceTrialBlocked=reason==='quota-client'||reason==='quota-global';
+  const resetLabel=voiceResetLabel(quota?.resetAt);
+  if(quota&&Number.isFinite(quota.clientRemaining)){
+   txt($('voice-usage'),'Voice attempts left: '+quota.clientRemaining+'/'+quota.clientLimit+
+    ' per visitor · '+quota.globalRemaining+'/'+quota.globalLimit+' site-wide · Resets '+resetLabel+'.');
+  }else txt($('voice-usage'),data.reason==='unconfigured'?'Voice transcription is not configured.':'Voice allowance could not be checked.');
+  txt($('voice-availability'),voiceAvailable?'● Gnani configured':voiceTrialBlocked?'● Voice limit reached':'● Voice unavailable');
+  if(!preserveMessage||!voiceAvailable){
+   const msg=voiceAvailable?'Ready to record. Each voice transcription uses a daily attempt; review the text before saving.':
+    voiceTrialBlocked?'Voice allowance exhausted until '+resetLabel+'. You can type a report instead.':
+    'Voice service is currently unavailable. You can type a report instead.';
+   txt($('voice-status'),msg);
+  }
+  $('record-voice').disabled=!voiceAvailable||voiceTrialBlocked;
+  if(!voiceAvailable)$('type-fallback').open=true;
+ }catch{
+  voiceAvailable=false;$('record-voice').disabled=true;
+  txt($('voice-availability'),'● Voice unavailable');
+  txt($('voice-usage'),'Could not verify voice quota. Typed reports remain available.');
+  if(!preserveMessage)txt($('voice-status'),'Voice service status unavailable. Type an observation instead.');
+  $('type-fallback').open=true;
+ }finally{if(button)button.disabled=false;}
 }
+$('check-voice').addEventListener('click',()=>refreshVoiceAvailability());
 // Each completed audio note starts a new transcription. An older response cannot
 // replace the text of a newer note, a language recheck, or a revoked consent.
 async function transcribeRecording(note){
@@ -639,11 +674,12 @@ async function transcribeRecording(note){
   txt($('voice-status'),'This voice note was transcribed. Review the text, choose your location, then save. You can record a new note anytime.');
   $('report-text').focus({preventScroll:true});
   $('type-fallback').scrollIntoView({behavior:'smooth',block:'nearest'});
+  void refreshVoiceAvailability({preserveMessage:true});
  }catch(error){
   if(!current())return;
   voiceTranscript=null;
   const reason=error.name==='AbortError'?'Transcription timed out.':(error.message||'Transcription failed.');
-  if(isVoiceQuotaError(error)){showQuotaError(error);txt($('transcript-provenance'),'Voice trial limit reached. Type and review your report instead.');}
+  if(isVoiceQuotaError(error)||isUpstreamRateLimit(error)){showQuotaError(error);txt($('transcript-provenance'),'No audio transcript was accepted. Type and review your report instead.');}
   else{txt($('voice-status'),reason+' Tap Retry transcription to reuse this recording, or record a new note. No report was saved.');txt($('transcript-provenance'),'Latest recording has no accepted transcript. Retry or type your own reviewed statement.');$('retry-voice').hidden=false;$('type-fallback').open=true;}
  }finally{
   if(latestVoiceNote?.id===note.id&&voiceAttemptSerial===attempt){

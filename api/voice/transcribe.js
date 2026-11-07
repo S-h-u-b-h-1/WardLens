@@ -105,6 +105,25 @@ const MAX_ENCODED_BYTES = 1400000;
 const MAX_AUDIO_BYTES = 1000000;
 const LANGS = Object.freeze(['hi-IN','bn-IN','en-IN']);
 const VOICE_ORIGIN = 'https://awaazgraph.vercel.app';
+const CLIENT_DAILY_LIMIT = 4;
+const GLOBAL_DAILY_LIMIT = 40;
+// Four daily attempts per client, forty across the public demo. Both counts
+// are enforced atomically in PostgreSQL, including requests with upstream errors.
+function nextUtcReset(){
+ const now=Date.now(),midnight=Math.floor(now/86400000)*86400000+86400000;
+ return {resetAt:new Date(midnight).toISOString(),retryAfterSeconds:Math.max(1,Math.ceil((midnight-now)/1000))};
+}
+function quotaReason(quota){
+ if(!quota)return 'unknown';
+ if(quota.globalRemaining<=0)return 'quota-global';
+ if(quota.clientRemaining<=0)return 'quota-client';
+ return 'ok';
+}
+function quotaMessage(reason){
+ return reason==='quota-global'?'WardLens voice demo is at its site-wide daily limit. Please type instead or try tomorrow.':
+  reason==='quota-client'?'Your device has used its daily WardLens voice attempts. Please type instead or try tomorrow.':
+  'Voice trial limit reached. Please type your report instead.';
+}
 function publicVoiceEnabled(env=process.env){
  return env.AWAAZ_VOICE_ENABLED==='true' && !!env.GNANI_API_KEY && !!env.DATABASE_URL;
 }
@@ -146,8 +165,19 @@ function quotaIdentity(headers={},secret){
 
 export const config={maxDuration:60};
 const json=(res,status,data)=>{res.setHeader('Cache-Control','no-store');res.setHeader('X-Content-Type-Options','nosniff');return res.status(status).json(data);};
-export async function handleVoice(req,res,{env=process.env,reserve,transcribe=transcribeGnani}={}){
- if(req.method==='GET')return json(res,200,{available:publicVoiceEnabled(env),provider:'gnani-prisma-v2.5',maxSeconds:25,policy:'Short clips only; consent required. Audio is sent to Gnani, not stored by WardLens. Reports remain in browser.'});
+export async function handleVoice(req,res,{env=process.env,reserve,transcribe=transcribeGnani,getQuota=readQuotaStatus}={}){
+ if(req.method==='GET'){
+  const meta={provider:'gnani-prisma-v2.5',maxSeconds:25,policy:'Short clips only; consent required. Audio is sent to Gnani, not stored by WardLens. Reports remain in browser.'};
+  if(!publicVoiceEnabled(env))return json(res,200,{...meta,available:false,reason:'unconfigured'});
+  try{
+   const clientKey=quotaIdentity(req.headers||{},env.GNANI_API_KEY);
+   const quota=await getQuota(clientKey,env),reason=quotaReason(quota);
+   return json(res,200,{...meta,available:reason==='ok',reason,quota});
+  }catch{
+   // Do not claim that credentials alone establish usable voice availability.
+   return json(res,200,{...meta,available:false,reason:'quota-unavailable'});
+  }
+ }
  if(req.method!=='POST')return json(res,405,{error:'Method not allowed'});
  if(!requestOriginAllowed(req.headers,env.AWAAZ_PUBLIC_ORIGIN||'https://awaazgraph.vercel.app'))return json(res,403,{error:'Only same-origin browser requests are accepted.'});
  if(String(req.headers['content-type']||'').split(';')[0]!=='application/json')return json(res,415,{error:'JSON content type required.'});
@@ -157,16 +187,41 @@ export async function handleVoice(req,res,{env=process.env,reserve,transcribe=tr
  try{
   const clientKey=quotaIdentity(req.headers,env.GNANI_API_KEY);
   const permitted=await (reserve||reserveQuota)(clientKey,env);
-  if(!permitted)return json(res,429,{error:'Voice trial limit reached. You can type your report instead.'});
+  if(!permitted){
+   let quota=null;
+   try{quota=await getQuota(clientKey,env);}catch{}
+   const reason=quotaReason(quota),reset=nextUtcReset();
+   res.setHeader('Retry-After',String(reset.retryAfterSeconds));
+   return json(res,429,{code:'WARDLENS_DAILY_LIMIT',error:quotaMessage(reason),reason,quota,resetAt:reset.resetAt});
+  }
   const r=await transcribe({fileName:'voice.wav',audio:voice.audio,language:voice.language,model:'prisma-v2.5',key:env.GNANI_API_KEY});
   return json(res,200,{transcript:r.transcript,language:r.language,model:r.model,provider:'gnani',reviewRequired:true});
  }catch(error){const status=error instanceof GnaniError?error.status:503;
-  return json(res,status,{error:error instanceof GnaniError?error.message:'Voice service is temporarily unavailable. Please type your report.'});}
+  const upstreamLimited=error instanceof GnaniError&&/rate-limit/i.test(error.message);
+  return json(res,status,{code:upstreamLimited?'GNANI_RATE_LIMIT':'TRANSCRIPTION_UNAVAILABLE',
+   error:error instanceof GnaniError?error.message:'Voice service is temporarily unavailable. Please type your report.'});}
 }
 async function reserveQuota(clientKey,env){
  const {neon}=await import('@neondatabase/serverless');const sql=neon(env.DATABASE_URL);
  // The DB function serializes reservations with an advisory transaction lock.
- const rows=await sql`SELECT public.awaaz_voice_reserve(CURRENT_DATE, ${clientKey}, 2, 24) AS permitted`;
+ const rows=await sql`SELECT public.awaaz_voice_reserve(CURRENT_DATE, ${clientKey}, ${CLIENT_DAILY_LIMIT}, ${GLOBAL_DAILY_LIMIT}) AS permitted`;
  return rows[0]?.permitted===true;
+}
+async function readQuotaStatus(clientKey,env){
+ const {neon}=await import('@neondatabase/serverless');
+ const sql=neon(env.DATABASE_URL);
+ const rows=await sql`SELECT scope, attempts FROM public.awaaz_voice_quota
+  WHERE day=CURRENT_DATE AND scope IN ('global', ${'ip:'+clientKey})`;
+ let globalUsed=0,clientUsed=0;
+ for(const row of rows){
+  if(row.scope==='global')globalUsed=Number(row.attempts)||0;
+  if(row.scope==='ip:'+clientKey)clientUsed=Number(row.attempts)||0;
+ }
+ return {
+  clientRemaining:Math.max(0,CLIENT_DAILY_LIMIT-clientUsed),
+  globalRemaining:Math.max(0,GLOBAL_DAILY_LIMIT-globalUsed),
+  clientLimit:CLIENT_DAILY_LIMIT,globalLimit:GLOBAL_DAILY_LIMIT,
+  resetAt:nextUtcReset().resetAt
+ };
 }
 export default async function handler(req,res){return handleVoice(req,res);}
