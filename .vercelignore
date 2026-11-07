@@ -1,0 +1,9 @@
+.env*
+.git
+node_modules
+__pycache__
+*.py
+*.zip
+*.tar.gz
+.wardlens-pre-voice-hotfix-*
+.DS_Store

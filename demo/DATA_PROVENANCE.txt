@@ -1,0 +1,6 @@
+WardLens public-safe showcase
+All six voices are fictional text fixtures, not actual recorded Gnani responses.
+Every graph state, candidate and hypothesis was generated ahead of time by src/intelligence.js.
+The site makes no outgoing network requests, never uses microphone/location and contains no authentication secret.
+A browser rejection selects a precomputed engine result; no server data is changed.
+For consented live Gnani speech, use the main WardLens workspace; this tutorial remains offline and fictional.

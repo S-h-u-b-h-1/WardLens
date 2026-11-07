@@ -1,0 +1,27 @@
+# Local development and Vercel configuration
+.env
+.env.*
+!.env.example
+.vercel/
+node_modules/
+__pycache__/
+*.pyc
+*.pem
+*.key
+*.p12
+*.pfx
+*.log
+*.zip
+*.tar.gz
+*.mp3
+*.mp4
+*.wav
+*.m4a
+*.webm
+wardlens-private-evidence*.json
+wardlens-redacted-brief*.md
+.DS_Store
+.wardlens-pre-voice-hotfix-*/
+coverage/
+playwright-report/
+test-results/

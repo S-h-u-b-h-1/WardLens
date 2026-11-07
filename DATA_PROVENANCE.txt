@@ -1,0 +1,12 @@
+WardLens v0.22 Field Atlas: observation, location, inspectable relationships
+Interactive typed reporting, real OSM basemap and current evidence engine run in the browser.
+Report data is kept only in browser memory unless a user opts into browser-device storage.
+Saved reports, precise coordinates, identities and API keys are not transmitted to WardLens servers. Audio goes to Gnani only after explicit permission.
+OSM tile requests go to tile.openstreetmap.org and disclose the map viewport to that provider.
+With explicit consent, a short recording is transmitted to a protected same-origin endpoint then Gnani Prisma for transcription.
+The transcript is returned for human review before a local-only report is saved. Audio is never persisted by WardLens.
+The voice endpoint requires a server-only Gnani key and transactional Neon daily quotas; it refuses inference until configured.
+Cloud workspace accounts and shared report persistence remain separate and are not enabled.
+Reports and inferred relationships are unverified; there is no municipal feed or notification.
+The /demo/ route is a separately labeled fictional, precomputed tutorial.
+v0.22 creates a new map-led field atlas page, sidebar field desk and direct, voice-first reporting while preserving the original review and correction contracts.
