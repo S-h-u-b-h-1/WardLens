@@ -7,7 +7,7 @@ WardLens lets people record or type observations about roads, drainage, standing
 - Live site: https://awaazgraph.vercel.app/
 - Demo video: https://wardlens-demo-2026.vercel.app/
 - Project: Gnani AI Great Indian AI Internship Challenge 2026
-- This repository mirrors the **v0.22.8 production source**, including quota-aware transcription error handling.
+- This repository tracks the **v0.22.9 voice-reliability candidate**, with bounded per-visitor/site-wide usage feedback and reviewed transcription flow.
 
 ## Features
 
@@ -55,3 +55,12 @@ Do not commit `.env*`, `.vercel/`, recording files, or personal report exports. 
 The source matches the tested Vercel v0.22.7 preview deployment, including `workspace.js`, `report-scope.js`, `engine.js`, `geo-map.js` and the existing serverless API code. Some legacy package metadata and provenance text retain older version labels. Do not mistake those labels for missing features.
 
 See `DATA_PROVENANCE.txt` and `demo/DATA_PROVENANCE.txt` for further limitations.
+
+## Automated tests and submission
+
+Run the local deterministic tests with **npm test**. They use mocks and do not consume live Gnani credits.
+
+- Release acceptance checklist: docs/RELEASE_ACCEPTANCE.md
+- Hackathon rules, submission copy and checklist: docs/GNANI_SUBMISSION.md
+
+A preview must pass checks before any release to the Git-connected production site.
