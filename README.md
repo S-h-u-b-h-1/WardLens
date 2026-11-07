@@ -7,7 +7,7 @@ WardLens lets people record or type observations about roads, drainage, standing
 - Live site: https://awaazgraph.vercel.app/
 - Demo video: https://wardlens-demo-2026.vercel.app/
 - Project: Gnani AI Great Indian AI Internship Challenge 2026
-- This repository contains the **v0.22.7 voice-retry preview source**. The production website may be on an earlier release until deployment limits clear.
+- This repository mirrors the **v0.22.8 production source**, including quota-aware transcription error handling.
 
 ## Features
 

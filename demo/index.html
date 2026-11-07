@@ -17,4 +17,64 @@
   <a class="skip" href="#story">Skip to story</a>
   <header class="bar">
     <div class="container bar-inner">
-      <a class="brand" href="../" aria-label="Back to WardLens workspace"><span class="logo" aria-hidden="true"><svg viewBox="0 0 64 64"><rect width="64" height="64" rx="17" fill="#0e223f"/><path d="M14 24 25 41 33 26 43 40 51 23" fill="none" stroke="#72b7ff" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="24" r="4.2" fill="white"/><circle cx="51" cy="23" r="4.2" fill="wh���q�^
+      <a class="brand" href="../" aria-label="Back to WardLens workspace"><span class="logo" aria-hidden="true"><svg viewBox="0 0 64 64"><rect width="64" height="64" rx="17" fill="#0e223f"/><path d="M14 24 25 41 33 26 43 40 51 23" fill="none" stroke="#72b7ff" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="24" r="4.2" fill="white"/><circle cx="51" cy="23" r="4.2" fill="white"/></svg></span><span>WardLens</span></a><a class="back-to-workspace" href="../">← Open real workspace</a>
+      <nav class="nav" aria-label="Sections"><a href="#how">How it works</a><a href="#story">Try the demo</a><a href="#boundaries">What’s real</a></nav>
+      <div class="edition"><span class="status-dot" aria-hidden="true"></span> Public-safe showcase</div>
+    </div>
+  </header>
+  <main id="top">
+    <section class="hero container" aria-labelledby="landing-title">
+      <div class="hero-content">
+        <div class="eyebrow"><span class="dash"></span> UNDERSTAND LOCAL PROBLEMS THROUGH EVIDENCE</div>
+        <h1 id="landing-title">From local reports<br><span class="dim">to a clearer picture.</span></h1>
+        <p>When neighbors describe a water or power problem in different languages, WardLens shows what might be related—and why. Follow the original reports, spot contradictions, and decide what needs checking next.</p>
+        <div class="hero-actions"><a class="primary" href="#story">Try the 6-report demo <span aria-hidden="true">→</span></a><a class="secondary" href="#how">How it works ↓</a></div>
+        <div class="hero-caveat"><span class="spark" aria-hidden="true">ℹ</span> <strong>A fictional, precomputed scenario.</strong> <strong>No live model calls.</strong> It does not record audio or show real city incidents.</div>
+      </div>
+      <aside class="hero-preview" aria-label="An illustrative example of a possible connection">
+        <span class="preview-label">A SIMPLE EXAMPLE <span>FICTIONAL</span></span>
+        <div class="preview-quote"><span class="preview-dot">01</span><div><strong>“पानी नहीं आ रहा।”</strong><small>No water supply reported in Hindi</small></div></div>
+        <div class="preview-bridge">Compare nearby observations ↓</div>
+        <div class="preview-quote"><span class="preview-dot">02</span><div><strong>“পাম্পটা কাজ করছে না।”</strong><small>Pump not working, reported in Bengali</small></div></div>
+        <div class="preview-result"><span aria-hidden="true">↗</span><div><strong>Possible connection</strong><small>Supported by sources, not a confirmed cause</small></div></div>
+      </aside>
+    </section>
+    <section class="explainer container" id="how" aria-labelledby="explainer-title">
+      <div class="section-top"><div><div class="eyebrow">HOW WARDLENS WORKS</div><h2 id="explainer-title">Three simple steps.</h2></div><p>Explore the full process without a microphone, account, or real location.</p></div>
+      <div class="explain-grid">
+        <article><span class="explain-number">01</span><h3>Understand the report</h3><p>WardLens reads a reviewed statement in Hindi, Bengali, Hinglish or English. The public WardLens workspace can transcribe consented voice with Gnani Prisma.</p></article>
+        <article><span class="explain-number">02</span><h3>Look for possible links</h3><p>It compares issues, service areas and available time evidence—without guessing a verified root cause.</p></article>
+        <article><span class="explain-number">03</span><h3>Inspect the source</h3><p>Click a report or dashed link to see the exact quotation, the reasons for the suggestion and any counter-evidence.</p></article>
+      </div>
+    </section>
+    <section class="metrics container" aria-label="Current scenario metrics">
+      <div><div class="metric-value" id="stat-reports">—</div><div class="metric-label">Visible reports</div></div>
+      <div><div class="metric-value" id="stat-links">—</div><div class="metric-label">Candidate relationships</div></div>
+      <div><div class="metric-value" id="stat-contradictions">—</div><div class="metric-label">Contradictions</div></div>
+      <div><div class="metric-value" id="stat-hypotheses">—</div><div class="metric-label">Working hypotheses</div></div>
+    </section>
+    <section class="workspace container" id="story">
+      <div class="section-top"><div><div class="eyebrow">INTERACTIVE DEMO · 6 FICTIONAL REPORTS</div><h2>Try it yourself.</h2></div><p>Click <strong>Next report</strong> to add observations. Select a report card or a dashed link to see exactly why WardLens connects them.</p></div>
+      <div class="story-strip"><div class="strip-label" role="status" aria-live="polite"><span>DEMO PROGRESS <strong id="step-count">1 / 6</strong></span><span id="stage-title">First observation</span><span id="stage-description" class="stage-description"></span></div><div class="progress-rail"><div id="stage-progress" class="progress-fill"></div></div><div class="strip-actions"><button id="prev-stage" class="small-button" type="button">← Previous</button><button id="next-stage" class="small-button dark-button" type="button">Next report →</button><button id="restart" class="small-button" type="button">Restart</button></div></div>
+      <div class="work-grid">
+        <section class="panel graph-panel" id="evidence" aria-labelledby="graph-title">
+          <div class="panel-header"><div><div class="micro-label">TRACEABLE RELATIONSHIPS</div><h3 id="graph-title">What could be connected?</h3></div><span class="subtle-status">Not verified causes</span></div>
+          <div class="legend"><span><i class="swatch blue"></i>Voice report</span><span><i class="swatch amber"></i>Candidate link</span><span><i class="swatch red"></i>Contradiction</span></div>
+          <div id="graph" class="graph-stage" role="group" aria-label="Fictional evidence network"></div>
+          <div class="panel-footer">Select any report or connection to inspect the original evidence. Fictional locations and asset IDs only.</div>
+        </section>
+        <aside class="panel inspector" aria-labelledby="inspector-title">
+          <div class="panel-header"><div><div class="micro-label">SOURCE-LINKED REASONING</div><h3 id="inspector-title">Why was it connected?</h3></div><span class="inspector-icon" aria-hidden="true">↗</span></div>
+          <div class="inspector-body" id="inspector-body" aria-live="polite"></div>
+        </aside>
+      </div>
+      <div class="under-grid">
+        <div class="brief-panel"><div class="micro-label">CURRENT INFERENCE</div><h3 id="hypothesis-title">No working hypothesis yet.</h3><p id="hypothesis-description">Advance the report sequence to observe how evidence links emerge.</p><div id="hypothesis-questions"></div></div>
+        <div class="brief-panel muted-brief"><div class="micro-label">YOUR TURN</div><h3>What if a link is wrong?</h3><p>Rejecting a possible relationship in this browser-only showcase removes it from the local candidate count. It doesn't write any data or change the original sources.</p><p class="mini-note">Select a blue dashed connection, then choose “Reject suggestion” in the inspector.</p></div>
+      </div>
+    </section>
+    <section class="boundary container" id="boundaries"><div class="eyebrow">02 / EVIDENCE, NOT CERTAINTY</div><h2>What the showcase <em>does—and doesn't—prove.</em></h2><div class="boundary-grid"><article><span class="bound-icon">✓</span><h3>Real reasoning code</h3><p>Every stage is generated ahead of time using WardLens's actual deterministic extraction, comparison and hypothesis engine.</p></article><article><span class="bound-icon">∼</span><h3>Fictional incident data</h3><p>People, reports, ward boundaries, and pump identifiers are made up. Nothing here represents a live local emergency or an official claim.</p></article><article><span class="bound-icon">!</span><h3>No live model calls</h3><p>This static site never requests microphone permission or accesses Gnani. The public WardLens workspace has separate, consent-gated Prisma transcription; this fictional tutorial makes no provider calls.</p></article></div><div class="final-note">WardLens proposes questions worth investigating. It does not establish a root cause, confirm a person's identity, or notify any civic authority.</div></section>
+  </main>
+  <footer><div class="container foot"><strong>WardLens</strong><span>Built for the Great Indian AI Internship Challenge · 2026</span><span>Public-safe synthetic showcase</span></div></footer>
+</body>
+</html>

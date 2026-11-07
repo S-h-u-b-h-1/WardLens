@@ -24,4 +24,145 @@
 <div class="header-inner wrap-wide">
 <a aria-label="WardLens home" class="brand" href="#top"><img alt="" height="38" src="./assets/favicon.svg" width="38"/><span>WardLens</span><span class="brand-suffix">/ field notes</span></a>
 <nav aria-label="Primary navigation" class="site-nav">
-<a class="nav���q�^
+<a class="nav-report is-current" data-open-view="report" href="#workspace">Report</a>
+<a class="nav-explore" data-open-view="explore" href="#workspace">Investigate</a><a class="nav-graph" data-open-graph href="#evidence-network-panel">Graph</a>
+<a href="#how">Our approach</a>
+</nav>
+<div class="header-tools"><span class="privacy-status"><span class="privacy-dot"></span> Private workspace</span><a class="header-start" data-open-view="report" href="#workspace">Start a report <span aria-hidden="true">↗</span></a></div>
+</div>
+</header>
+<main id="top">
+<section aria-labelledby="hero-heading" class="hero-shell">
+<div class="hero-grid wrap-wide">
+<div class="hero-copy">
+<div class="hero-kicker"><span class="alive-dot"></span> INDEPENDENT CIVIC INTELLIGENCE <span class="kicker-line"></span> 01 / OBSERVE</div>
+<h1 id="hero-heading">A clearer picture<br/>starts with <span>your voice.</span></h1>
+<p class="hero-lede">A waterlogged street. A broken pump. A blocked drain. <strong>Share what you saw</strong> and WardLens helps you make sense of it—on a map, with the original evidence always in view.</p>
+<div class="hero-actions">
+<a class="btn hero-primary" data-open-view="report" href="#workspace">Start an observation <span aria-hidden="true">↗</span></a>
+<a class="hero-link" href="#how">See how it works <span aria-hidden="true">↗</span></a>
+</div>
+<div class="hero-meta"><span><i aria-hidden="true" class="meta-indicator"></i> Hindi · Bengali · Hinglish · English</span><span class="meta-sep"></span><span>No account required</span></div>
+</div>
+<div aria-label="Illustrative graphic showing two fictional local observations with a possible relationship; this is not live incident data" class="hero-visual" role="img">
+<div class="visual-top"><span class="visual-eyebrow">FIELD VIEW <span>—</span> ILLUSTRATIVE ONLY</span><span class="visual-corner">⌁   N 01</span></div>
+<svg aria-hidden="true" class="visual-map" preserveaspectratio="xMidYMid meet" viewbox="0 0 540 395">
+<defs><pattern height="25" id="mapdots" patternunits="userSpaceOnUse" width="25"><circle cx="2" cy="2" fill="#477973" opacity=".33" r=".9"></circle></pattern><lineargradient id="street" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#6cb9a5" stop-opacity=".5"></stop><stop offset="1" stop-color="#b9decf" stop-opacity=".1"></stop></lineargradient></defs>
+<rect fill="url(#mapdots)" height="395" width="540"></rect>
+<g fill="none" opacity=".75" stroke="url(#street)" stroke-linecap="round" stroke-width="1.4"><path d="M-20 92 C96 138 153 43 268 102 S438 152 565 76"></path><path d="M-35 250 C92 185 152 269 279 230 S436 186 575 262"></path><path d="M79 -20 C128 110 54 205 111 415"></path><path d="M339 -20 C286 90 392 201 325 419"></path><path d="M466 -20 C423 110 480 276 447 415"></path><path d="M-5 350 Q130 312 225 392"></path></g>
+<circle cx="203" cy="189" fill="#8ac9b7" opacity=".035" r="105"></circle><circle cx="203" cy="189" fill="none" opacity=".27" r="73" stroke="#92c6b7" stroke-dasharray="4 8" stroke-width="1"></circle>
+<path class="pulse-route" d="M178 183 Q257 112 360 230" fill="none" stroke="#afddd0" stroke-dasharray="7 8" stroke-linecap="round" stroke-width="2.2"></path>
+<circle cx="178" cy="183" fill="#173e3c" r="19" stroke="#a2dccd" stroke-width="1.5"></circle><circle cx="178" cy="183" fill="#d5fff1" r="7"></circle>
+<circle cx="360" cy="230" fill="#173e3c" r="19" stroke="#a2dccd" stroke-width="1.5"></circle><circle cx="360" cy="230" fill="#d5fff1" r="7"></circle>
+<circle class="pulse-circle" cx="178" cy="183" fill="none" opacity=".26" r="35" stroke="#9bd3c0" stroke-width="1.4"></circle>
+</svg>
+<div class="observation-chip chip-one"><span class="chip-icon">01</span><div><small>LOCAL OBSERVATION</small><strong>Standing water</strong><span>Firsthand statement</span></div></div>
+<div class="observation-chip chip-two"><span class="chip-icon">02</span><div><small>NEARBY OBSERVATION</small><strong>Blocked drainage</strong><span>Reported separately</span></div></div>
+<div class="visual-bottom"><span class="visual-track"><span class="route-line"></span> POSSIBLE RELATIONSHIP</span><span class="not-verified">NOT A VERIFIED CAUSE</span></div>
+</div>
+</div>
+<div class="hero-base wrap-wide"><span>FROM OBSERVATION TO EVIDENCE</span><div class="signal-steps"><span><b>01</b> Speak or write</span><i></i><span><b>02</b> Place a location</span><i></i><span><b>03</b> Inspect the links</span></div></div>
+</section>
+<section aria-labelledby="app-heading" class="workspace-section" id="workspace">
+<div class="workspace-surface wrap-wide">
+<aside aria-label="Workspace navigation" class="workspace-rail">
+<div class="rail-heading"><span class="rail-kicker">YOUR WORKSPACE</span><span class="rail-monogram">WL<span> / 01</span></span></div>
+<div aria-label="Workspace sections" class="view-tabs" role="tablist">
+<button aria-controls="report-view" aria-selected="true" class="view-tab is-selected" data-view="report" id="tab-report" role="tab" type="button"><span class="tab-symbol">↗</span><span class="tab-label">Create report<small>Speak, locate, save</small></span></button>
+<button aria-controls="explore-view" aria-selected="false" class="view-tab" data-view="explore" id="tab-explore" role="tab" type="button"><span class="tab-symbol">◎</span><span class="tab-label">Investigate<small>Review your evidence</small></span><span class="tab-count" id="tab-report-count">0</span></button>
+</div>
+<div class="rail-bottom"><div class="rail-rule"></div><span class="rail-lock">◉   Browser-private</span><p>Nothing you report is published to a shared map or sent to authorities.</p><a class="rail-learn" href="#how">About our approach ↗</a></div>
+</aside>
+<div class="workspace-main">
+<div class="app-heading"><div><p class="eyebrow small-eyebrow">THE FIELD DESK   /   01—02</p><h2 id="app-heading">Make a note. Find a pattern.</h2><p id="app-subheading">Start with an observation. The connections come later.</p></div><span class="status-pill" id="workspace-status" role="status">Ready for a report</span></div>
+<div aria-labelledby="tab-report" id="report-view" role="tabpanel">
+<div class="view-intro"><div class="step-chip">01 <span>CAPTURE A FIRSTHAND OBSERVATION</span></div><h3>What happened?</h3><p>Speak naturally or write a short statement. Nothing is saved until you review it.</p></div>
+<div class="work-layout">
+<section aria-labelledby="composer-title" class="panel composer"><div class="panel-title"><span class="micro">THE OBSERVATION</span><h3 id="composer-title">Start with your words.</h3><p>Describe what you noticed. We won't guess the cause.</p></div><form id="report-form">
+
+<div class="voice-box voice-first" id="voice-box">
+<div class="voice-head"><div><span class="voice-caption">YOUR VOICE, FIRST</span><strong>Tell us what happened.</strong></div><span class="voice-availability" id="voice-availability" role="status">Checking Gnani…</span></div>
+<p>Record a short observation (up to 25 seconds). Review the transcript before saving anything.</p>
+<div class="form-field"><label for="report-language">Spoken language</label><select id="report-language"><option value="hi-IN">Hindi / Hinglish</option><option value="bn-IN">Bengali</option><option value="en-IN">English</option></select></div><div class="recording-control"><button aria-label="Start voice report" class="voice-primary" disabled="" id="record-voice" type="button"><svg aria-hidden="true" class="mic-mark" fill="none" height="22" viewbox="0 0 24 24" width="22"><rect height="12" rx="3" stroke="currentColor" stroke-width="1.8" width="6" x="9" y="3"></rect><path d="M5.8 11.5a6.2 6.2 0 0 0 12.4 0M12 18v3M8.5 21h7" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"></path></svg> <span id="record-label">Tap to speak</span></button><button class="btn small secondary stop-button" disabled="" id="stop-voice" type="button">Stop &amp; transcribe</button></div>
+<label class="checkline voice-permission"><input id="voice-consent" type="checkbox"/><span><strong>Allow voice transcription with Gnani.</strong> Your short recording is sent for speech-to-text and is not stored by WardLens. <small>Prefer privacy or a quiet space? Type instead.</small></span></label>
+<audio controls="" hidden="" id="recording-playback"></audio><div class="voice-retry-controls" id="voice-retry-controls"><button class="btn small secondary" id="retry-voice" type="button" hidden>Retry transcription</button><span>Retry the same audio after an error, or tap the microphone to replace it.</span></div><div class="voice-live-status" id="voice-status" role="status">Checking live transcription…</div>
+</div>
+<details class="type-fallback" id="type-fallback"><summary><span aria-hidden="true" class="keyboard-mark">⌨</span> Prefer typing? Write your observation <span aria-hidden="true" class="caret">⌄</span></summary>
+<div class="form-field"><label for="report-text">Your statement / reviewed transcription</label><textarea id="report-text" maxlength="1000" placeholder="For example: गली में पानी भर गया है।" rows="4"></textarea><small id="transcript-provenance">Only a statement you review and approve will become evidence.</small></div>
+<div aria-live="polite" class="draft-preview" id="draft-preview" role="status"><div class="draft-preview-head"><strong>What the system understands</strong><span>Preliminary · Not verified</span></div><div class="draft-preview-result" id="draft-preview-result">Start typing or transcribe a voice note to preview possible issues.</div></div>
+</details>
+<div class="location-block"><div class="location-head"><strong>Where did this happen?</strong><span>STEP 2 OF 2</span></div><div class="pin-box" id="pin-summary">No location selected. Choose on map, then select a street position.</div><div class="button-row location-buttons"><button class="btn small secondary" id="choose-pin" type="button">⌖ Place a map pin</button><button class="btn small tertiary" id="use-location" type="button">Use my location</button></div><p id="map-location-status" class="map-location-status" role="status" aria-live="polite">Detecting your location. Until permission is granted, the map shows New Delhi.</p>
+<details class="mobile-location-help" id="location-help"><summary>Location not working? Fix iPhone permissions</summary>
+ <p>Open WardLens directly in Safari or Chrome—not inside WhatsApp, LinkedIn or another app.</p>
+ <p><strong>iPhone Settings → Privacy &amp; Security → Location Services:</strong> turn Location Services on. Select <strong>Safari Websites</strong> or <strong>Chrome</strong>, allow location while using the browser, and enable <strong>Precise Location</strong>.</p>
+ <p>In Safari, open this website's page menu → Website Settings → Location → Allow or Ask. Return here and tap <strong>Use my location</strong>.</p>
+ <p>If access is still unavailable, you can search for a place or choose a map pin. That location will be marked unverified for the 300 m device check.</p>
+</details></div>
+<details class="optional-fields"><summary>Time and saving options <span aria-hidden="true">⌄</span></summary>
+<div class="form-field"><label for="observed-at">When did you observe this? <span class="small-muted">Optional</span></label><input id="observed-at" type="datetime-local"/><small>Leave empty if unknown. We never invent an exact time.</small></div>
+<label class="checkline memory-permission"><input id="remember-device" type="checkbox"/><span>Remember my reports on this device. <small>No account or cloud synchronization.</small></span></label>
+</details>
+<label class="checkline report-permission"><input id="report-consent" required="" type="checkbox"/><span>I have permission to submit this statement. I understand reports and map locations are not independently verified.</span></label>
+<button class="btn primary block" id="save-report" type="submit">Save observation <span aria-hidden="true">↗</span></button>
+<div aria-live="assertive" class="form-message" id="form-message" role="alert"></div>
+</form></section>
+<section aria-labelledby="map-title" class="panel map-card">
+<div class="map-title-row"><div><span class="micro">YOUR REPORT LOCATION</span><h3 id="map-title">Place it on the map.</h3><p>Choose a point on the map for your observation. The location is reporter-provided, not independently verified.</p></div><div class="zoom-buttons"><button aria-label="Zoom out" id="zoom-minus" type="button">−</button><span id="zoom-level">12×</span><button aria-label="Zoom in" id="zoom-plus" type="button">+</button></div></div>
+<div class="map-place-search" role="search" aria-label="Search for a map location">
+ <label for="place-query">Find a place or address</label>
+ <div class="map-place-controls"><input type="search" id="place-query" autocomplete="off" spellcheck="false" maxlength="110" placeholder="e.g. India Gate, New Delhi" aria-describedby="place-search-help"/><button type="button" class="btn small secondary" id="place-search-button">Search location</button></div>
+ <p id="place-search-help">Search only when you press the button. The place name is sent to Photon (Komoot), using OpenStreetMap data. Your GPS position and saved reports are not sent.</p>
+ <p id="place-search-status" role="status" aria-live="polite">Type a location to find it on the map.</p>
+ <div id="place-search-results" class="place-search-results" role="group" aria-label="Matching places"></div>
+</div>
+<div class="map-proximity" id="map-proximity" role="status" aria-live="polite" data-proximity="none">100 m device-proximity check will appear after you select a report location.</div>
+<div class="map-frame"><div class="live-map" id="live-map"></div><div class="map-overlay-caption">OpenStreetMap · Unverified user reports</div></div>
+<div class="map-foot"><span id="map-help">Scroll to move the page. Use +/− or hold ⌘/Ctrl while scrolling to zoom.</span><span>© OpenStreetMap contributors</span></div>
+<div class="map-summary"><span>WHY LOCATION MATTERS</span><p>WardLens compares reports only when their locations and available times are compatible. Nearby does not mean caused by the same event.</p></div>
+<div aria-label="Evidence counts" class="counts"><div><strong id="count-reports">0</strong><span>Reports</span></div><div><strong id="count-links">0</strong><span>Possible links</span></div><div><strong id="count-unclear">0</strong><span>Need details</span></div></div>
+</section>
+</div>
+</div>
+<div id="explore-view" role="tabpanel" aria-labelledby="tab-explore" hidden>
+<div class="view-intro"><div class="step-chip">02 <span>FOLLOW THE EVIDENCE</span></div><h3>Your local picture.</h3><p>Inspect source quotes, possible links and missing details. Nothing here is a verified incident feed.</p></div>
+<section aria-labelledby="insight-heading" class="insight-panel">
+<div class="insight-panel-head"><div><span class="micro">AT A GLANCE · ONLY THIS BROWSER</span><h3 id="insight-heading">Your evidence summary</h3><p>These counts describe what you entered; they do not confirm incidents.</p></div><button class="btn small secondary" id="export-brief" type="button">Download redacted brief</button></div>
+<div class="insight-metrics"><div><strong id="insight-reports">0</strong><span>Reports</span></div><div><strong id="insight-links">0</strong><span>Possible links</span></div><div><strong id="insight-unclear">0</strong><span>Need details</span></div><div><strong id="insight-voice">0</strong><span>Gnani-assisted</span></div></div>
+<div class="insight-recommendation"><div><span class="micro">SUGGESTED NEXT STEP</span><strong id="insight-next-title">Start with a firsthand report</strong><p id="insight-next-body">Speak or type one observation and choose its location.</p></div><button class="btn small primary" id="insight-next-action" type="button">Add a report</button></div>
+</section>
+
+<section aria-labelledby="network-heading" class="panel network-panel" id="evidence-network-panel">
+ <div class="network-panel-head">
+  <div class="network-copy"><span class="micro">THE EVIDENCE GRAPH · BROWSER-PRIVATE</span><h3 id="network-heading">Explore the relationships.</h3>
+   <p>Every node is a report. Dashed lines show <strong>possible connections, not proven causes.</strong> Select a node or connection to inspect its source and uncertainty.</p></div>
+  <div class="network-tools" aria-label="Evidence graph controls">
+   <button class="network-tool" type="button" id="graph-minus" aria-label="Zoom out of evidence graph">−</button>
+   <button class="network-tool" type="button" id="graph-plus" aria-label="Zoom into evidence graph">+</button>
+   <button class="network-tool network-tool-text" type="button" id="graph-fit">Reset view</button>
+   <button class="network-tool network-tool-text" type="button" id="graph-show-map">View map ↗</button>
+  </div>
+ </div>
+ <div class="network-frame"><svg id="evidence-network" class="evidence-network" viewBox="0 0 960 480" role="group" aria-label="Private graph of reports and possible relationships"></svg></div>
+ <div class="network-foot">
+   <div id="graph-summary" role="status">0 reports · 0 relationships</div>
+   <div class="network-legend" aria-label="Graph legend"><span><i class="network-key network-key-node"></i>Reports</span><span><i class="network-key network-key-link"></i>Possible link</span><span><i class="network-key network-key-conflict"></i>Conflict</span><span><i class="network-key network-key-rejected"></i>Dismissed</span></div>
+ </div>
+ <p class="network-disclaimer">Graph positions are illustrative, not geographic. Exact positions remain on the map. Links are tentative hypotheses derived from unverified observations.</p>
+</section>
+
+<div class="results-layout"><section aria-label="My report library" class="panel reports-panel"><div class="panel-header-inline"><div><span class="micro">YOUR LIBRARY</span><h3>Field notes</h3></div><button class="btn small secondary" id="new-report-button" type="button">+ New report</button></div>
+<div class="library-toolbar"><div class="library-search"><label for="library-search">Search reports</label><input autocomplete="off" id="library-search" maxlength="160" placeholder="Search words or topic" type="search"/></div><div class="library-filter"><label for="library-filter">Filter</label><select id="library-filter"><option value="all">All reports</option><option value="unclear">Need details</option><option value="connected">Possible links</option><option value="conflicts">Conflicting reports</option><option value="voice">Gnani-assisted</option><option value="typed">Typed reports</option></select></div></div>
+<div class="library-results-note" id="library-results-note" role="status">0 reports · Browser-private</div>
+<div aria-live="polite" class="results-list" id="report-list"><p class="empty-state">No reports yet. Make your first report to start exploring evidence.</p></div>
+<details class="manage-data"><summary>Backups &amp; data controls <span aria-hidden="true">⌄</span></summary><div class="button-row"><button class="btn small secondary" id="import-data" type="button">Restore private backup</button><button class="btn small secondary" id="export-data" type="button">Download private backup</button><button class="btn small danger" id="clear-data" type="button">Clear all reports</button><input accept=".json,application/json" hidden="" id="import-file" type="file"/></div><p>Private backups contain exact words and coordinates. Do not post them publicly.</p></details>
+</section><section aria-label="Evidence inspector" class="panel inspector-panel"><div class="panel-title"><span class="micro">SOURCE CHECK</span><h3>Look closer.</h3><p>Open a saved observation or a possible connection to inspect the exact supporting words.</p></div><div aria-live="polite" class="inspector-content" id="evidence-inspector"><p class="empty-state">Choose a report on the left to inspect its source and uncertainty.</p></div></section></div>
+</div>
+<div class="workspace-disclosure"><span aria-hidden="true" class="disclosure-symbol">i</span><p><strong>Private research tool, not an official reporting system.</strong> Reports are not shared with authorities or other users. OpenStreetMap receives tile requests. With your consent, only short voice clips are sent to Gnani for transcription. original reports and exact coordinates remain in this browser; no cause is confirmed. Suggested links are not verified incident reports.</p></div>
+</div>
+</div>
+</section>
+<section aria-labelledby="approach-title" class="approach-section" id="how"><div class="wrap-wide approach-layout"><div class="approach-lead"><span class="approach-index">THE WARDLENS METHOD / 03</span><h2 id="approach-title">The source stays in the picture.</h2><p>Good investigation begins with the observation—not a conclusion. WardLens helps you compare nearby reports while keeping uncertainty visible.</p><a class="approach-link" data-open-view="report" href="#workspace">Create your first field note <span aria-hidden="true">↗</span></a></div><div class="approach-list"><article><span>01 <span class="approach-glyph">◉</span></span><div><h3>Say what you saw.</h3><p>Use Gnani Prisma voice transcription or type instead. You control the final reviewed words.</p></div></article><article><span>02 <span class="approach-glyph">⌖</span></span><div><h3>Put it in context.</h3><p>Add a reporter-provided map pin. The engine checks symptom, distance and known observation times.</p></div></article><article><span>03 <span class="approach-glyph">⌁</span></span><div><h3>Question every connection.</h3><p>Inspect the original quotations, add clarifications, correct mistakes and dismiss weak suggestions.</p></div></article></div></div></section>
+</main>
+<footer class="site-footer"><div class="footer-inner wrap-wide"><div class="footer-identity"><img alt="" height="34" src="./assets/favicon.svg" width="34"/><strong>WardLens</strong><span>Local reports. Clearer context.</span></div><div class="footer-actions"><a data-open-view="report" href="#workspace">Make a report</a><a data-open-view="explore" href="#workspace">Investigate</a><a href="./demo/">Fictional walkthrough</a></div><p class="footer-limit">Independent research prototype for the Great Indian AI Internship Challenge. Not affiliated with any municipal authority. Not an emergency reporting service.</p></div></footer>
+<div class="toast" hidden="" id="toast" role="status"></div>
+</body></html>
