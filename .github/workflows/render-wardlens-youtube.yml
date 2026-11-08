@@ -1,0 +1,120 @@
+name: Render WardLens YouTube showcase
+
+on:
+  push:
+    branches:
+      - media/youtube-showcase-20261108
+    paths:
+      - "media/youtube/render.py"
+      - ".github/workflows/render-wardlens-youtube.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wardlens-youtube-showcase
+  cancel-in-progress: false
+
+jobs:
+  render-video:
+    name: Render 1080p YouTube MP4
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout media branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install render prerequisites
+        run: |
+          set -euo pipefail
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --no-cache-dir --disable-pip-version-check Pillow numpy
+          if ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y ffmpeg
+          fi
+
+      - name: Download original recorded demo
+        run: |
+          set -euo pipefail
+          mkdir -p raw
+          curl --fail --location --silent --show-error --retry 3 --retry-all-errors \
+            --max-time 120 \
+            https://wardlens-demo-2026.vercel.app/WardLens_Gnani_60s_Demo.mp4 \
+            --output raw/wardlens_original_60s.mp4
+          test "$(wc -c < raw/wardlens_original_60s.mp4)" -gt 1000000
+          ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1 raw/wardlens_original_60s.mp4
+
+      - name: Render animated video, narration, original music, and thumbnail
+        run: |
+          set -euo pipefail
+          .venv/bin/python media/youtube/render.py \
+            raw/wardlens_original_60s.mp4 \
+            --out-dir render
+
+      - name: Verify output is upload-ready
+        run: |
+          set -euo pipefail
+          ffprobe -v error -show_entries format=duration:stream=codec_name,codec_type,width,height,r_frame_rate \
+            -of json render/WardLens_Cinematic_YouTube_Showcase.mp4 > render/media-metadata.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('render/media-metadata.json').read_text())
+          video=next((s for s in d['streams'] if s['codec_type']=='video'),None)
+          audio=next((s for s in d['streams'] if s['codec_type']=='audio'),None)
+          duration=float(d['format']['duration'])
+          assert video and video.get('codec_name')=='h264'
+          assert (video['width'],video['height'])==(1920,1080)
+          assert audio and audio.get('codec_name')=='aac'
+          assert 74.6<duration<75.4,duration
+          assert Path('render/WardLens_Cinematic_YouTube_Showcase.mp4').stat().st_size>2000000
+          assert Path('render/WardLens_YouTube_Thumbnail.png').stat().st_size>20000
+          print('MASTER VERIFIED:',duration,'seconds, 1920x1080, H.264 + AAC')
+          PY
+
+      - name: Preserve rendered video as Actions artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: WardLens-YouTube-Showcase
+          path: |
+            render/WardLens_Cinematic_YouTube_Showcase.mp4
+            render/WardLens_YouTube_Thumbnail.png
+            render/media-metadata.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish downloadable GitHub Release assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="wardlens-youtube-showcase-v1-20261108"
+          cat > render/release-notes.md <<'NOTES'
+          # WardLens — Cinematic YouTube Showcase
+          New 75-second, 1080p animated edit of the recorded WardLens product walkthrough,
+          preserving the existing narration and adding original synthesized instrumental BGM.
+
+          The demonstration contains fictional civic observations and labelled synthetic voice tests;
+          it does not depict verified municipal reports, official incident feeds, or proven causes.
+
+          - Live app: https://awaazgraph.vercel.app/
+          - Source repository: https://github.com/S-h-u-b-h-1/WardLens
+          - Technology actually used: Gnani Prisma v2.5 speech-to-text.
+
+          Download the MP4 below for upload to YouTube. The PNG is a ready-to-use 1280x720 thumbnail.
+          NOTES
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" \
+              render/WardLens_Cinematic_YouTube_Showcase.mp4 \
+              render/WardLens_YouTube_Thumbnail.png --clobber
+          else
+            gh release create "$TAG" \
+              render/WardLens_Cinematic_YouTube_Showcase.mp4 \
+              render/WardLens_YouTube_Thumbnail.png \
+              --target "$GITHUB_SHA" \
+              --title "WardLens — Cinematic YouTube Showcase (75s)" \
+              --notes-file render/release-notes.md \
+              --latest=false
+          fi
