@@ -237,7 +237,7 @@ def encode_card(image, duration, output):
     vf=(f"scale=2010:1131,"
         f"crop=1920:1080:x='45+20*sin(t*0.55)':y='26+10*cos(t*0.5)',"
         f"fps={FPS},fade=t=in:st=0:d=0.65,"
-        f"fade=t=out:st={duration-.50}:d=.5,format=yuv420p")
+        f"fade=t=out:st={duration-.50}:d=0.5,format=yuv420p")
     run(["ffmpeg","-hide_banner","-loglevel","error","-y","-loop","1",
          "-framerate",str(FPS),"-i",image,"-t",str(duration),"-vf",vf,
          "-an","-c:v","libx264","-preset","veryfast","-crf","21",
