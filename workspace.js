@@ -184,7 +184,7 @@ function renderReportInspector(report){const host=$('evidence-inspector');host.r
     controls.dispatchEvent(new CustomEvent('wardlens:followup-transcribed',{detail:result}));
     retryAnswer.hidden=true;txt(voiceStatus,'Follow-up transcription received. Review it before saving.');
    }catch(error){if(input.isConnected){if(isVoiceQuotaError(error)||isUpstreamRateLimit(error)){showQuotaError(error);retryAnswer.hidden=true;txt(voiceStatus,explainQuota(error));}else txt(voiceStatus,(error.message||'Transcription failed.')+' You can retry again or type your answer.');}}
-   finally{retryAnswer.disabled=false;if(input.isConnected)speak.disabled=!voiceAvailable;}
+   finally{retryAnswer.disabled=false;if(input.isConnected){speak.disabled=!voiceAvailable||voiceTrialBlocked;void refreshVoiceAvailability({preserveMessage:true});}}
   });retryAnswer.hidden=true;
   const voiceStatus=el('div','followup-voice-status',voiceAvailable?'Optional: answer by voice, then review the text.':'Voice unavailable. Type your answer instead.');voiceStatus.setAttribute('role','status');
   voiceButtons.append(speak,stop,retryAnswer);controls.append(consent,voiceButtons,voiceStatus);
@@ -304,6 +304,7 @@ async function requestGnaniTranscription(blob,language,onStatus,externalSignal=n
  }finally{clearTimeout(deadline);externalSignal?.removeEventListener('abort',forwardAbort);}
 }
 async function recordFollowupAnswer({language,consent,field,status,start,stop,onCaptured=()=>{},onFailure=()=>{},onSuccess=()=>{}}){
+ if(voiceTrialBlocked){txt(status,'Voice allowance exhausted. Type your answer or check again later.');return;}
  if(!voiceAvailable){txt(status,'Voice is unavailable on this deployment; type a reply instead.');return;}
  if(!consent.checked){txt(status,'Check the Gnani audio consent box before recording.');consent.focus();return;}
  if(voice?.state==='recording'||followupRecorder){txt(status,'Finish the current recording first.');return;}
@@ -333,7 +334,7 @@ async function recordFollowupAnswer({language,consent,field,status,start,stop,on
     controls?.dispatchEvent(new CustomEvent('wardlens:followup-transcribed',{detail:transcript}));
     onSuccess();txt(status,'Gnani answer received. Read and correct it before saving.');field.focus({preventScroll:true});
    }catch(error){if(field.isConnected){onFailure(error);if(isVoiceQuotaError(error)||isUpstreamRateLimit(error)){showQuotaError(error);txt(status,explainQuota(error));}else txt(status,(error.message||'Transcription failed.')+' Retry this recorded answer or type.');}}
-   finally{if(field.isConnected)start.disabled=!voiceAvailable;}
+   finally{if(field.isConnected){start.disabled=!voiceAvailable||voiceTrialBlocked;void refreshVoiceAvailability({preserveMessage:true});}}
   },{once:true});
   recorder.start();stop.disabled=false;txt(status,'Recording your answer… 18 seconds maximum. Stop when ready.');
   followupTimer=setTimeout(()=>{if(recorder.state==='recording')recorder.stop();},18000);
@@ -674,7 +675,6 @@ async function transcribeRecording(note){
   txt($('voice-status'),'This voice note was transcribed. Review the text, choose your location, then save. You can record a new note anytime.');
   $('report-text').focus({preventScroll:true});
   $('type-fallback').scrollIntoView({behavior:'smooth',block:'nearest'});
-  void refreshVoiceAvailability({preserveMessage:true});
  }catch(error){
   if(!current())return;
   voiceTranscript=null;
@@ -685,6 +685,8 @@ async function transcribeRecording(note){
   if(latestVoiceNote?.id===note.id&&voiceAttemptSerial===attempt){
    activeVoiceAbort=null;$('retry-voice').disabled=false;
    $('record-voice').disabled=!voiceAvailable||voiceTrialBlocked||microphonePending||!!voice;
+   // Every server attempt, including a failed attempt, consumes quota.
+   void refreshVoiceAvailability({preserveMessage:true});
   }
  }
 }
